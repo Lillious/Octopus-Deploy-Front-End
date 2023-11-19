@@ -15,7 +15,7 @@ import { router as auth } from './routes/auth';
 app.use(auth);
 
 
-app.use("/",express.static(path.join(__dirname, "../www/public/")));
+app.use("/",express.static(path.join(__dirname, "/www/public/")));
 
 app.get('*', (req, res) => {
     res.status(404).send({
