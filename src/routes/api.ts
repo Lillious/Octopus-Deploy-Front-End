@@ -11,6 +11,7 @@ import Octopus from '../api/';
 const url = "https://raw.githubusercontent.com/Lillious/Octopus-Deploy-API-Wrapper/main/index.ts";
 const file = path.join(__dirname, "..", "/api/index.ts");
 const server = await fetch(url);
+if (!server.ok) throw new Error("Unable to fetch API");
 const serverHash = hash(await server.text());
 const client = fs.readFileSync(file);
 const clientHash = hash(client.toString());
