@@ -7,11 +7,6 @@ export const router = express.Router();
 const apiPath = '/api/v1';
 import Octopus from '../api/';
 
-function getCookie(cookies: string, name: string) {
-    var match = cookies.match(new RegExp('(^| )' + name + '=([^;]+)'));
-    if (match) return match[2];
-}
-
 // Check if the API is up to date
 const url = "https://raw.githubusercontent.com/Lillious/Octopus-Deploy-API-Wrapper/main/index.ts";
 const file = path.join(__dirname, "..", "/api/index.ts");
