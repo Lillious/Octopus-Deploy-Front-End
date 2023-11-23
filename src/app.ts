@@ -15,14 +15,14 @@ app.use(cookieParser());
 
 // Session Setup
 app.use(
-    cookieSession({
-      name: "session",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      path: "/",
-      domain: "*.*",
-      keys: [process.env.SESSION_KEY || "secret"],
-    })
-  );
+  cookieSession({
+    name: "session",
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    path: "/",
+    domain: "*.*",
+    keys: [process.env.SESSION_KEY || "secret"],
+  })
+);
 
 // Authentication Middleware API
 import { router as auth } from './routes/auth';

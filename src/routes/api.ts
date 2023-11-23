@@ -1,9 +1,28 @@
 import express from 'express';
 import { GetDatabaseByName, Authenticate, CreateAPIKey } from '../controllers/db_controller';
 import {hash, randomBytes } from '../utility/hash';
-import Octopus from '../api';
+import path from 'path';
+import fs from 'fs';
 export const router = express.Router();
 const apiPath = '/api/v1';
+import Octopus from '../api/';
+
+// Check if the API is up to date
+const url = "https://raw.githubusercontent.com/Lillious/Octopus-Deploy-API-Wrapper/main/index.ts";
+const file = path.join(__dirname, "..", "/api/index.ts");
+const server = await fetch(url);
+const serverHash = hash(await server.text());
+const client = fs.readFileSync(file);
+const clientHash = hash(client.toString());
+
+// If the hashes are different, update the API
+if (serverHash !== clientHash) {
+    const result = await fetch(url);
+    const text = await result.text();
+    console.log("API is out of date, updating...");
+    fs.writeFileSync(file, text);
+    console.log("API updated - Please restart the server.");
+}
 
 router.post(`/generate-api-key`, (req, res) => {
     if (!req?.headers?.session) return res.status(403).send({
