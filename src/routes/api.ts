@@ -68,6 +68,26 @@ router.get(`${apiPath}/deployment-targets`, async (req, res) => {
     }
 });
 
+// Upgrade Deployment Target
+router.post(`${apiPath}/deployment-target-upgrade`, async (req, res) => {
+    if (!req?.body?.id) return res.status(400).send({
+        error: "ID is required"
+    });
+
+    if (!req?.body?.space) return res.status(400).send({
+        error: "Space is required"
+    });
+
+    try {
+        const result = await Octopus.DeploymentTarget.Upgrade(req.body.id as string, req.body.space as string);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(400).send({
+            error: error
+        });
+    }
+});
+
 // Tasks API
 router.get(`${apiPath}/deployment-tasks`, async (req, res) => {
     if (!req?.query?.id) return res.status(400).send({
@@ -75,6 +95,16 @@ router.get(`${apiPath}/deployment-tasks`, async (req, res) => {
     });
 
     const result = await Octopus.Task.List(req.query.id as string);
+    res.send(result);
+});
+
+// Create Task
+router.post(`${apiPath}/deployment-task`, async (req, res) => {
+    if (!req?.body?.task) return res.status(400).send({
+        error: "Task is required"
+    });
+
+    const result = await Octopus.Task.Create(req.body.task);
     res.send(result);
 });
 

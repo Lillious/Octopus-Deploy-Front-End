@@ -259,6 +259,7 @@ side-nav ul li:hover {
 
 #deployment-targets .deployment-target .actions .update {
     background-color: var(--orange);
+    cursor: pointer;
 }
 
 #deployment-targets .deployment-target .actions .disabled {

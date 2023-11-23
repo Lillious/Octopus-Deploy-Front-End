@@ -63,6 +63,23 @@ const DeploymentTargets = async () => {
             Update.classList.add('update');
             Update.innerText = 'Update Available';
             Actions.appendChild(Update);
+
+            Update.addEventListener('click', async () => {
+                const response = await fetch(`/api/v1/deployment-target-upgrade`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: DeploymentTarget.Id,
+                        space: DeploymentTarget.SpaceId
+                    })
+                });
+                const data = await response.json();
+                console.log(data);
+                if (!data) return window.Notification('error', data.Error);
+                window.Notification('success', 'Update started');
+            });
         }
 
         if (DeploymentTarget.IsDisabled) {
