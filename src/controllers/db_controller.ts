@@ -39,9 +39,29 @@ export const CreateAPIKey = (username: string, key: string) => {
     return Query(db, `INSERT INTO keys (username, key) VALUES ('${username.toLowerCase()}', '${key.toUpperCase()}')`);
 }
 
-export const ValidateAPIKey = (username:string, key: string) => {
+export const ValidateAPIKey = (username: string, key: string) => {
     const db = GetDatabaseByName("api_keys.sqlite");
     const result = Query(db, `SELECT * FROM keys WHERE username='${username.toLowerCase()}' AND key='${key.toUpperCase()}'`);
     if (result.length > 0) return true;
     return false;
+}
+
+export const CreateSession = (username: string, session: string) => {
+    const db = GetDatabaseByName("sessions.sqlite");
+    Query(db, `DELETE FROM sessions WHERE username='${username.toLowerCase()}'`);
+    return Query(db, `INSERT INTO sessions (username, session) VALUES ('${username.toLowerCase()}', '${session}')`);
+}
+
+export const ValidateSession = (username: string, session: string) => {
+    const db = GetDatabaseByName("sessions.sqlite");
+    const result = Query(db, `SELECT * FROM sessions WHERE username='${username.toLowerCase()}' AND session='${session}'`);
+    if (result.length > 0) return true;
+    return false;
+}
+
+export const GetAPIKey = (username: string) => {
+    const db = GetDatabaseByName("api_keys.sqlite");
+    const result = Query(db, `SELECT * FROM keys WHERE username='${username.toLowerCase()}'`);
+    if (result.length > 0) return (result[0] as { key: string }).key;
+    return undefined;
 }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dashboard</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <script type="module">
+            import Notification from "../../js/notification.js";
+            window.Notification = Notification;
+        </script>
+        <link rel="preload" href="https://fonts.googleapis.com/icon?family=Material+Icons" as="style">
+        <link rel="preload" href="../../css/style.css" as="style">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+        <link rel="stylesheet" href="../../css/style.css">
+        <link rel="icon" href="../images/node.ico" type="image/x-icon">
+        <script src="../js/getDeploymentTargets.js"></script>
+    </head>
+    <body>
+        <nav>
+            <div id="logo" onclick="location.href='/';">Deploy</div>
+            <div id="breadcrumbs">&#8250; Deployment Targets</div>
+        </nav>
+        <side-nav>
+            <ul>
+                <li onclick="location.href='/dashboard'">Overview</li>
+                <li onclick="location.href='/dashboard/deployment-targets'" class="active">Deployment Targets</li>
+                <li onclick="location.href='/dashboard/settings'">Settings</li>
+                <li onclick="location.href='/logout'">Logout</li>
+            </ul>
+        </side-nav>
+
+        <div class="container">
+            <div id="deployment-targets"></div>
+        </div>
+    </body>
+</html>

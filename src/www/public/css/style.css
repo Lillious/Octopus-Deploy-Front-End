@@ -1,0 +1,297 @@
+:root {
+    --primary : #F2F8FD;
+    --secondary : #2E475D;
+    --tertiary : #0D80D8;
+    --quaternary : #76A8D0;
+    --background : #111A23;
+    --green : #029656;
+    --red : #d43f3f;
+    --orange: #dbb13b;
+    --placeholder : rgba(242, 248, 253, 0.5);
+    --box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+    --nav-height: 25px;
+    --font-small: 14px;
+    --font-medium-small: 16px;
+    --font-medium: 18px;
+    --font-large: 24px;
+}
+
+::-webkit-scrollbar {
+    width: 3px;
+}
+
+::-webkit-scrollbar-track {
+    background: #343434;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--placeholder);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--background);
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: var(--primary);
+}
+
+input[type=text] {
+    border: none;
+    text-indent: 0px;
+}
+
+input:not([type=checkbox], [type=button]) {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid var(--tertiary);
+    height: 30px;
+    width: 200px;
+    color: var(--primary);
+    background: transparent;
+    text-indent: 0px;
+    transition: 0.2s;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+input[type=checkbox] {
+    height: 15px;
+    width: 15px;
+}
+
+input[type=email]:focus, input[type=password]:focus, input[type=text]:focus {
+    transition: 0.2s;
+    border-bottom: 1px solid var(--quaternary);
+}
+
+input[type=email]:hover:not(:focus), input[type=password]:hover:not(:focus), input[type=text]:hover:not(:focus) {
+    transition: 0.2s;
+    border-bottom: 1px solid var(--quaternary);
+}
+
+::placeholder {
+    color: var(--placeholder);
+    text-indent: 0px;
+}
+
+button {
+    background: transparent;
+    color: var(--primary);
+    transition: 0.2s;
+    padding: 8px;
+    min-width: 150px;
+    border: 1px solid var(--tertiary);
+}
+
+button:hover {
+    transition: 0.2s;
+    cursor: pointer;
+    background: var(--tertiary);
+}
+
+.align-center {
+    display: flex;
+    align-items:center;
+}
+
+.justify-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    top: 35%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 450px;
+    height: 550px;
+}
+
+h1 {
+    color: var(--primary);
+    font-weight: normal;
+    letter-spacing: 1px;
+}
+
+nav {
+    -webkit-user-select: none;
+    user-select: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: var(--tertiary);
+    color: var(--primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 22px;
+    height: var(--nav-height);
+    font-size: var(--font-large);
+    box-shadow: var(--box-shadow);
+}
+
+side-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 999;
+    background-color: var(--background);
+    color: var(--primary);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: left;
+    width: 225px;
+    height: 100vh;
+    font-size: var(--font-medium-small);
+    box-shadow: var(--box-shadow);
+}
+
+side-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 150px 0 0 0;
+}
+
+side-nav ul li {
+    padding: 18px 30px;
+    color: var(--primary);
+    transition: 0.2s;
+}
+
+side-nav ul li:hover {
+    cursor: pointer;
+    color: var(--quaternary);
+    background-color: var(--secondary);
+    transition: 0.2s;
+}
+
+.active {
+    color: var(--quaternary);
+}
+
+#logo {
+    cursor: pointer;
+}
+
+#breadcrumbs {
+    position: absolute;
+    left: 100px;
+    margin-top: 5px;
+    font-size: var(--font-small);
+}
+
+.container {
+    position: absolute;
+    top: 65px;
+    left: 225px;
+    right: 0;
+    bottom: 0;
+    padding: 30px;
+}
+
+#deployment-targets {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+#deployment-targets .deployment-target {
+    width: 100%;
+    padding: 0px 0;
+    border-bottom: 1px solid var(--tertiary);
+    display: block;
+}
+
+
+#deployment-targets .deployment-target .roles, #deployment-targets .deployment-target .actions {
+    display: block;
+    list-style: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#deployment-targets .deployment-target .roles {
+    margin-left: -40px;
+}
+
+#deployment-targets .deployment-target .roles .role, #deployment-targets .deployment-target .actions .action {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0 5px;
+    border-radius: 5px;
+    background-color: var(--tertiary);
+    color: var(--primary);
+}
+
+#deployment-targets .deployment-target .health {
+    -webkit-user-select: none;
+    user-select: none;
+    float: right;
+    margin-right: 25px;
+    margin-top: 3px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: var(--red);
+}
+
+#deployment-targets .deployment-target .healthy {
+    background-color: var(--green);
+}
+
+#deployment-targets .deployment-target .actions .update {
+    background-color: var(--orange);
+}
+
+#deployment-targets .deployment-target .actions .disabled {
+    background-color: var(--red);
+}
+
+#deployment-targets .deployment-target .status-summary {
+    font-size: var(--font-small);
+    color: var(--placeholder);
+    margin-left: 5px;
+}
+
+.notification {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: var(--background);
+    color: var(--primary);
+    padding: 15px;
+    box-shadow: var(--box-shadow);
+    z-index: 1000;
+    border-right: 5px solid transparent;
+    font-size: var(--font-small);
+}
+
+.error {
+    border-right: 5px solid var(--red);
+}
+
+.success {
+    border-right: 5px solid var(--green);
+}
+
+.warning {
+    border-right: 5px solid var(--yellow);
+}
