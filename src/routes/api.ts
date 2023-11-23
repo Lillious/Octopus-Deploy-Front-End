@@ -1,11 +1,16 @@
 import express from 'express';
-import { GetDatabaseByName, Authenticate, CreateAPIKey } from '../controllers/db_controller';
+import { GetDatabaseByName, Authenticate, CreateAPIKey, ValidateAPIKey } from '../controllers/db_controller';
 import {hash, randomBytes } from '../utility/hash';
 import path from 'path';
 import fs from 'fs';
 export const router = express.Router();
 const apiPath = '/api/v1';
 import Octopus from '../api/';
+
+function getCookie(cookies: string, name: string) {
+    var match = cookies.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    if (match) return match[2];
+}
 
 // Check if the API is up to date
 const url = "https://raw.githubusercontent.com/Lillious/Octopus-Deploy-API-Wrapper/main/index.ts";
@@ -29,13 +34,21 @@ router.post(`/generate-api-key`, (req, res) => {
         error: "INVALID_SESSION"
     });
 
+    if (!req?.body?.username || !req?.body?.password) return res.status(403).send({
+        error: "INVALID_CREDENTIALS"
+    });
+
+    if (!req?.body?.access_level) return res.status(403).send({
+        error: "INVALID_ACCESS_LEVEL"
+    });
+
     const db = GetDatabaseByName("users.sqlite");
     const result = Authenticate(db, req.body.username, hash(req.body.password)) as any;
 
     if (result.length > 0) {
         const key = () => {
             const key = `API-${randomBytes(16)}`.toUpperCase();
-            CreateAPIKey(req.body.username.toLowerCase(), key);
+            CreateAPIKey(req.body.username.toLowerCase(), key, req.body.access_level);
             return key;
         }
         res.status(200).send({
@@ -169,7 +182,6 @@ router.get(`${apiPath}/feeds`, async (req, res) => {
 });
 
 // Connection API
-//CheckConnection with query params for id
 router.get(`${apiPath}/check-connection`, async (req, res) => {
     try {
         if (!req?.query?.id) return res.status(400).send({

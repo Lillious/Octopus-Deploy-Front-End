@@ -17,9 +17,6 @@ const Deployments = async () => {
             method: 'GET'
         });
         const data = await response.json();
-        if (data?.response?.status === 404) {
-            return;
-        }
         return data;
     }
     catch (error) {
@@ -29,9 +26,8 @@ const Deployments = async () => {
 
 (async () => {
     const result = await Deployments();
-    if (!result) return window.Notification('error', 'Failed to get deployment target history');
+    if (result.error) return window.Notification('error', 'Failed to get deployment target history');
     for (item in result.Items) {
-        console.log(result.Items[item]);
         createDeploymentHistoryUI(result.Items[item]);
     }
 

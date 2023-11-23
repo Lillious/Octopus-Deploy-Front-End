@@ -14,7 +14,7 @@ const DeploymentTargets = async () => {
 (async () => {
 
     const result = await DeploymentTargets();
-    if (!result) return window.Notification('error', 'Failed to get deployment targets');
+    if (result.error) return window.Notification('error', 'Failed to get deployment targets');
 
     for (item in result.Items) {
         createDeploymentTargetUI(result.Items[item]);

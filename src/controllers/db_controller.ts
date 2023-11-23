@@ -33,17 +33,20 @@ export const Authenticate = (db: Database, username: string, password: string) =
     return Query(db, `SELECT * FROM users WHERE username='${username.toLowerCase()}' AND password='${password}'`);
 }
 
-export const CreateAPIKey = (username: string, key: string) => {
+export const CreateAPIKey = (username: string, key: string, access_level: number) => {
     const db = GetDatabaseByName("api_keys.sqlite");
     Query(db, `DELETE FROM keys WHERE username='${username.toLowerCase()}'`);
-    return Query(db, `INSERT INTO keys (username, key) VALUES ('${username.toLowerCase()}', '${key.toUpperCase()}')`);
+    return Query(db, `INSERT INTO keys (username, key, access_level) VALUES ('${username.toLowerCase()}', '${key.toUpperCase()}', ${access_level})`);
 }
 
-export const ValidateAPIKey = (username: string, key: string) => {
-    const db = GetDatabaseByName("api_keys.sqlite");
-    const result = Query(db, `SELECT * FROM keys WHERE username='${username.toLowerCase()}' AND key='${key.toUpperCase()}'`);
-    if (result.length > 0) return true;
-    return false;
+export const ValidateAPIKey = (session: string) => {
+    const user = Query(GetDatabaseByName("sessions.sqlite"), `SELECT * FROM sessions WHERE session='${session}'`);
+    if (user.length > 0) {
+        const db = GetDatabaseByName("api_keys.sqlite");
+        const result = Query(db, `SELECT * FROM keys WHERE username='${(user[0] as { username: string }).username.toLowerCase()}'`);
+        if (result.length > 0) return (result[0] as { access_level: number }).access_level;
+        return false;
+    }
 }
 
 export const CreateSession = (username: string, session: string) => {

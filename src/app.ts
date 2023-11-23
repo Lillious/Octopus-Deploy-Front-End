@@ -1,4 +1,5 @@
 import * as db from "./controllers/db_controller";
+import { randomBytes } from './utility/hash';
 import express from 'express';
 import path from 'path';
 import cookieParser from "cookie-parser";
@@ -20,7 +21,7 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
     path: "/",
     domain: "*.*",
-    keys: [process.env.SESSION_KEY || "secret"],
+    keys: [process.env.SESSION_KEY || randomBytes(32)],
   })
 );
 
@@ -37,9 +38,7 @@ app.use("/",express.static(path.join(__dirname, "/www/public/")));
 app.use("/dashboard",express.static(path.join(__dirname, "/www/dashboard/")));
 
 app.get('*', (req, res) => {
-    res.status(404).send({
-        error: 'NOT_FOUND'
-    });
+    res.status(404).redirect("/");
 });
 
 app.listen(port as number, host as string, () => {
@@ -52,8 +51,10 @@ const db_api_keys = db.CreateDatabase("api_keys.sqlite");
 const db_sessions = db.CreateDatabase("sessions.sqlite");
 
 db.CreateTable(db_users, "users", "id INTEGER PRIMARY KEY, username TEXT, email TEXT, password TEXT");
-db.CreateTable(db_api_keys, "keys", "id INTEGER PRIMARY KEY, username TEXT, key TEXT");
+db.CreateTable(db_api_keys, "keys", "id INTEGER PRIMARY KEY, username TEXT, key TEXT, access_level INTEGER");
 db.CreateTable(db_sessions, "sessions", "id INTEGER PRIMARY KEY, session TEXT, username TEXT");
 
 // Create a test user
 db.CreateUser(db_users, "user", "user@example.com", "1234");
+// Create a test API key for the test user
+db.CreateAPIKey("user", "API-1E4EC1C512A4447463751A26043F2FA0", 3);
