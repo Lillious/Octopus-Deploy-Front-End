@@ -14,7 +14,6 @@ const DeploymentTargets = async () => {
 (async () => {
 
     const result = await DeploymentTargets();
-    console.log(result);
     if (!result) return window.Notification('error', 'Failed to get deployment targets');
 
     for (item in result.Items) {
@@ -30,6 +29,10 @@ const DeploymentTargets = async () => {
         
         const DeploymentTargetName = document.createElement('h3');
         DeploymentTargetName.innerText = DeploymentTarget.Name;
+        DeploymentTargetName.classList.add('title');
+        DeploymentTargetName.addEventListener('click', () => {
+            location.href = `/dashboard/deployment-targets/deployments/?id=${DeploymentTarget.Id}&space=${DeploymentTarget.SpaceId}&name=${DeploymentTarget.Name}`;
+        });
         DeploymentTargetContainer.appendChild(DeploymentTargetName);
 
         const DeploymentTargetRoles = document.createElement('ul');

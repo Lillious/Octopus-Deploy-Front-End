@@ -30,6 +30,19 @@ class Client {
 
         if (result.ok) return await result.json();
 
+        // Try to parse the response as JSON and return an error object if it fails
+        try {
+            JSON.parse(result.statusText);
+        } catch (e) {
+            return {
+                response: {
+                    status: 500,
+                    message: "An unknown error occurred",
+                    errors: {},
+                },
+            } as ApiResponse<object>;
+        }
+
         const response = (await result.json()) as { ErrorMessage: string; Errors: object };
         return {
             response: {
@@ -40,7 +53,7 @@ class Client {
         } as ApiResponse<object>;
     }
 
-    public async post(path: string, body: any): Promise<any> {
+    public async post(path: string, body?: any): Promise<any> {
         return this.baseRequest(path, 'POST', body);
     }
 
@@ -52,7 +65,7 @@ class Client {
         return this.baseRequest(path, 'DELETE');
     }
 
-    public async put(path: string, body: any): Promise<any> {
+    public async put(path: string, body?: any): Promise<any> {
         return this.baseRequest(path, 'PUT', body);
     }
 }
@@ -80,6 +93,10 @@ const Octopus = {
         Find: async function (id: string) {
             if (!id) throw new Error("id is required");
             return await client.get(`/deployments/${id}`);
+        },
+        Create: async function (deployment: any) {
+            if (!deployment) throw new Error("deployment is required");
+            return await client.post("/deployments", deployment);
         }
     },
 
@@ -87,9 +104,9 @@ const Octopus = {
         List: async function () {
             return await client.get("/deploymentprocesses");
         },
-        Find: async function (id: string) {
+        Find: async function (id: string, space: string) {
             if (!id) throw new Error("id is required");
-            return await client.get(`/deploymentprocesses/${id}`);
+            return await client.get(`/${space}/machines/${id}/tasks?skip=0&type=Deployment`);
         },
         Template: async function (id: string) {
             if (!id) throw new Error("id is required");
@@ -126,6 +143,10 @@ const Octopus = {
         Create: async function (task: any) {
             if (!task) throw new Error("task is required");
             return await client.post("/tasks", task);
+        },
+        ReRun: async function (id: string) {
+            if (!id) throw new Error("id is required");
+            return await client.post(`/tasks/rerun/${id}`);
         }
     },
 

@@ -1,7 +1,7 @@
 export default function Notification(type, message) {
 	const notification = document.createElement("div");
 	notification.classList.add("notification");
-	notification.classList.add(type);
+	notification.classList.add(`notification-${type}`);
 	notification.innerHTML = `<p>${message}</p>`;
 	document.body.appendChild(notification);
 

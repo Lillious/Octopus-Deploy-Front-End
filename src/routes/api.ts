@@ -88,6 +88,19 @@ router.post(`${apiPath}/deployment-target-upgrade`, async (req, res) => {
     }
 });
 
+router.get(`${apiPath}/deployment-history`, async (req, res) => {
+    if (!req?.query?.id) return res.status(400).send({
+        error: "ID is required"
+    });
+
+    if (!req?.query?.space) return res.status(400).send({
+        error: "Space is required"
+    });
+
+    const result = await Octopus.DeploymentProcess.Find(req.query.id as string, req.query.space as string);
+    res.send(result);
+});
+
 // Tasks API
 router.get(`${apiPath}/deployment-tasks`, async (req, res) => {
     if (!req?.query?.id) return res.status(400).send({
@@ -105,6 +118,16 @@ router.post(`${apiPath}/deployment-task`, async (req, res) => {
     });
 
     const result = await Octopus.Task.Create(req.body.task);
+    res.send(result);
+});
+
+// Re-run Task
+router.post(`${apiPath}/deployment-task-rerun`, async (req, res) => {
+    if (!req?.body?.id) return res.status(400).send({
+        error: "ID is required"
+    });
+
+    const result = await Octopus.Task.ReRun(req.body.id as string);
     res.send(result);
 });
 
