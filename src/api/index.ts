@@ -104,6 +104,17 @@ const Octopus = {
         Find: async function (id: string) {
             if (!id) throw new Error("id is required");
             return await client.get(`/machines/${id}`);
+        },
+        Upgrade: async function (id: string, space: string) {
+            const task = {
+                'Name': 'Upgrade',
+                'Arguments': {
+                    'MachineIds': [id],
+                },
+                'Description': 'Upgrade Machine',
+                'SpaceId': space
+            }
+            return await Octopus.Task.Create(task);
         }
     },
 
@@ -111,6 +122,10 @@ const Octopus = {
         List: async function (id: string) {
             if (!id) throw new Error("id is required");
             return await client.get(`/machines/${id}/tasks`);
+        },
+        Create: async function (task: any) {
+            if (!task) throw new Error("task is required");
+            return await client.post("/tasks", task);
         }
     },
 
