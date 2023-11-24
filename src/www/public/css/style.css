@@ -233,10 +233,6 @@ side-nav ul li:hover {
     margin-left: -40px;
 }
 
-.action {
-    cursor: pointer;
-}
-
 #deployment-targets .deployment-target .roles .role, #deployment-targets .deployment-target .actions .action, #deployment-history .deployment .actions .action {
     display: inline-block;
     padding: 5px 10px;
@@ -244,6 +240,16 @@ side-nav ul li:hover {
     border-radius: 5px;
     background-color: var(--tertiary);
     color: var(--primary);
+}
+
+
+#deployment-targets .deployment-target .roles .role {
+    padding: 4px 6px;
+    font-size: var(--font-small);
+}
+
+#deployment-targets .deployment-target .actions .action {
+    cursor: pointer;
 }
 
 #deployment-targets .deployment-target .health {
