@@ -3,7 +3,7 @@
     <head>
         <title>Dashboard</title>
         <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"/>
         <script type="module">
             import Notification from "../js/notification.js";
             window.Notification = Notification;
@@ -22,7 +22,7 @@
         <side-nav>
             <ul>
                 <li onclick="location.href='/dashboard'" class="active">Overview</li>
-                <li onclick="location.href='/dashboard/deployment-targets'">Deployment Targets</li>
+                <li onclick="location.href='/dashboard/deployment-targets'">Targets</li>
                 <li onclick="location.href='/dashboard/settings'">Settings</li>
                 <li onclick="location.href='/logout'">Logout</li>
             </ul>

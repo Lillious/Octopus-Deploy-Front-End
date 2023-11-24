@@ -10,7 +10,8 @@
     --placeholder : rgba(242, 248, 253, 0.5);
     --box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
     --nav-height: 25px;
-    --font-small: 14px;
+    --nav-width: 200px;
+    --font-small: 15px;
     --font-medium-small: 16px;
     --font-medium: 18px;
     --font-large: 24px;
@@ -30,6 +31,17 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
+}
+
+@media only screen and (max-width: 980px) {
+    :root {
+        --nav-width: 150px;
+    }
+
+    .notification {
+        max-width: 300px;
+        line-height: 1.5;
+    }
 }
 
 body {
@@ -143,6 +155,7 @@ nav {
     height: var(--nav-height);
     font-size: var(--font-large);
     box-shadow: var(--box-shadow);
+    width: 100%;
 }
 
 side-nav {
@@ -157,7 +170,7 @@ side-nav {
     flex-direction: column;
     justify-content: space-between;
     align-items: left;
-    width: 225px;
+    width: var(--nav-width);
     height: 100vh;
     font-size: var(--font-medium-small);
     box-shadow: var(--box-shadow);
@@ -170,7 +183,7 @@ side-nav ul {
 }
 
 side-nav ul li {
-    padding: 18px 30px;
+    padding: 18px 25px;
     color: var(--primary);
     transition: 0.2s;
 }
@@ -195,12 +208,16 @@ side-nav ul li:hover {
     left: 100px;
     margin-top: 5px;
     font-size: var(--font-small);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 200px);
 }
 
 .container {
     position: absolute;
     top: 65px;
-    left: 225px;
+    left: var(--nav-width);
     right: 0;
     bottom: 0;
     padding: 30px;
@@ -240,27 +257,35 @@ side-nav ul li:hover {
     border-radius: 5px;
     background-color: var(--tertiary);
     color: var(--primary);
+    margin-bottom: 10px;
 }
 
+.title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
+}
 #deployment-targets .deployment-target .roles .role {
-    padding: 4px 6px;
+    padding: 3px 5px;
     font-size: var(--font-small);
+    font-weight: 600;
 }
 
 #deployment-targets .deployment-target .actions .action {
     cursor: pointer;
+    font-weight: 600;
 }
 
 #deployment-targets .deployment-target .health {
     -webkit-user-select: none;
     user-select: none;
     float: right;
-    margin-right: 25px;
-    margin-top: 3px;
-    padding: 5px 10px;
+    padding: 3px 5px;
     border-radius: 5px;
     background-color: var(--red);
+    font-size: var(--font-small);
+    font-weight: 600;
 }
 
 #deployment-targets .deployment-target .healthy {
@@ -287,6 +312,10 @@ side-nav ul li:hover {
     background-color: #07ad65;
 }
 
+#deployment-targets .deployment-target .actions .action:hover:is(.disabled) {
+    cursor: not-allowed;
+}
+
 #deployment-targets .deployment-target .actions .disabled-target {
     background-color: var(--red);
 }
@@ -294,7 +323,10 @@ side-nav ul li:hover {
 #deployment-targets .deployment-target .status-summary {
     font-size: var(--font-small);
     color: var(--placeholder);
-    margin-left: 5px;
+    margin-left: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #deployment-targets .deployment-target .title {
@@ -309,10 +341,12 @@ side-nav ul li:hover {
 
 #deployment-history .deployment .completed-time {
     display: inline-block;
-    padding: 3px 10px;
+    padding: 3px 5px;
     border-radius: 5px;
     text-align: center;
     min-width: 140px;
+    font-weight: 600;
+    font-size: var(--font-small);
 }
 
 #deployment-history .deployment .completed-time .failed {
@@ -329,6 +363,9 @@ side-nav ul li:hover {
 
 .disabled {
     opacity: 0.5;
+}
+
+.disabled:hover {
     cursor: not-allowed;
 }
 
@@ -343,6 +380,7 @@ side-nav ul li:hover {
     z-index: 1000;
     border-right: 5px solid transparent;
     font-size: var(--font-small);
+    line-height: 1.5;
 }
 
 .notification-info {
