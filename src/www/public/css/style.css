@@ -235,19 +235,18 @@ side-nav ul li:hover {
     width: 100%;
     padding: 0px 0;
     border-bottom: 1px solid var(--tertiary);
-    display: block;
+
 }
 
-
 #deployment-targets .deployment-target .roles, #deployment-targets .deployment-target .actions {
-    display: block;
     list-style: none;
     -webkit-user-select: none;
     user-select: none;
+    width: 100%;
 }
 
-#deployment-targets .deployment-target .roles {
-    margin-left: -40px;
+ul {
+    padding-inline-start: 0px;
 }
 
 #deployment-targets .deployment-target .roles .role, #deployment-targets .deployment-target .actions .action, #deployment-history .deployment .actions .action {
