@@ -262,10 +262,26 @@ side-nav ul li:hover {
 }
 
 #deployment-targets .deployment-target .actions .update {
+    transition: 0.2s;
     background-color: var(--orange);
 }
 
-#deployment-targets .deployment-target .actions .disabled {
+#deployment-targets .deployment-target .actions .update:hover:not(.disabled) {
+    transition: 0.2s;
+    background-color: #fcac4c;
+}
+
+#deployment-targets .deployment-target .actions .check-health {
+    transition: 0.2s;
+    background-color: var(--green);
+}
+
+#deployment-targets .deployment-target .actions .check-health:hover:not(.disabled) {
+    transition: 0.2s;
+    background-color: #07ad65;
+}
+
+#deployment-targets .deployment-target .actions .disabled-target {
     background-color: var(--red);
 }
 
@@ -305,6 +321,11 @@ side-nav ul li:hover {
     background-color: var(--yellow);
 }
 
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .notification {
     position: fixed;
     bottom: 25px;
@@ -316,6 +337,10 @@ side-nav ul li:hover {
     z-index: 1000;
     border-right: 5px solid transparent;
     font-size: var(--font-small);
+}
+
+.notification-info {
+    border-right: 5px solid var(--tertiary);
 }
 
 .notification-error {

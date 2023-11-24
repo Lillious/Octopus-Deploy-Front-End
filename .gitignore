@@ -131,3 +131,6 @@ dist
 
 *.sqlite
 rest.http
+
+src/certs/**
+!src/certs/.gitkeep

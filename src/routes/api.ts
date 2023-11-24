@@ -429,10 +429,10 @@ router.get(`${apiPath}/feeds`, async (req, res) => {
 });
 
 // Connection API
-router.get(`${apiPath}/check-connection`, async (req, res) => {
+router.get(`${apiPath}/deployment-targets/check-connection`, async (req, res) => {
     /**
      * @openapi
-     * '/api/v1/check-connection{id}':
+     * '/api/v1/deployment-targets/check-connection{id}':
      *  get:
      *      description: Check a connection
      *      tags:

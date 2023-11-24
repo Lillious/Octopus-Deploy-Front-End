@@ -11,6 +11,39 @@ const DeploymentTargets = async () => {
     }
 }
 
+const CheckConnectionHealth = async (id) => {
+    try {
+        const response = await fetch(`/api/v1/deployment-targets/check-connection?id=${id}`, {
+            method: 'GET'
+        });
+        const data = await response.json();
+        return data;
+    }
+    catch (error) {
+        return error;
+    }
+}
+
+const UpdateDeploymentTarget = async (id, space) => {
+    try {
+        const response = await fetch(`/api/v1/deployment-target-upgrade`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id,
+                space
+            })
+        });
+        const data = await response.json();
+        return data;
+    }
+    catch (error) {
+        return error;
+    }
+}
+
 (async () => {
 
     const result = await DeploymentTargets();
@@ -48,7 +81,7 @@ const DeploymentTargets = async () => {
 
         const Health = document.createElement('div');
         Health.classList.add('health');
-        Health.innerText = DeploymentTarget.HealthStatus;
+        Health.innerText = DeploymentTarget.HealthStatus || 'Unknown';
         if (DeploymentTarget.HealthStatus === 'Healthy') {
             Health.classList.add('healthy');
         }
@@ -64,34 +97,55 @@ const DeploymentTargets = async () => {
             const Update = document.createElement('li');
             Update.classList.add('action');
             Update.classList.add('update');
-            Update.innerText = 'Update Available';
+            Update.innerText = 'Update';
             Actions.appendChild(Update);
 
             Update.addEventListener('click', async () => {
-                const response = await fetch(`/api/v1/deployment-target-upgrade`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id: DeploymentTarget.Id,
-                        space: DeploymentTarget.SpaceId
-                    })
-                });
-                const data = await response.json();
-                console.log(data);
-                if (!data) return window.Notification('error', data.Error);
-                window.Notification('success', 'Update started');
+                if (Update.classList.contains('disabled')) return;
+                Update.classList.add('disabled');
+                setTimeout(() => {
+                    Update.classList.remove('disabled');
+                }, 5000);
+                const data = await UpdateDeploymentTarget(DeploymentTarget.Id, DeploymentTarget.SpaceId);
+                if (!data) return window.Notification('error', 'Unable to update deployment target');
+                window.Notification('success', 'Successfully updated deployment target');
+                Update.remove();
             });
         }
 
         if (DeploymentTarget.IsDisabled) {
             const Disable = document.createElement('li');
             Disable.classList.add('action');
-            Disable.classList.add('disabled');
+            Disable.classList.add('disabled-target');
             Disable.innerText = 'Disabled';
             Actions.appendChild(Disable);
         }
+
+        const checkHealth = document.createElement('li');
+        checkHealth.classList.add('action');
+        checkHealth.classList.add('check-health');
+        checkHealth.innerText = 'Check Health';
+        checkHealth.addEventListener('click', async () => {
+            if (checkHealth.classList.contains('disabled')) return;
+            checkHealth.classList.add('disabled');
+            setTimeout(() => {
+                checkHealth.classList.remove('disabled');
+            }, 5000);
+            const response = await CheckConnectionHealth(DeploymentTarget.Id);
+            if (response.error) return window.Notification('error', 'Failed to check health');
+            Health.innerText = response.Status || 'Unknown';
+            if (response.Status !== 'Healthy') {
+                Health.classList.remove('healthy');
+                window.Notification('error', `Unable to connect to ${DeploymentTarget.Name}`);
+            } else {
+                if (!Health.classList.contains('healthy')) {
+                    Health.classList.add('healthy');
+                }
+                window.Notification('success', `Successfully connected to ${DeploymentTarget.Name}`);
+            }
+        });
+
+        Actions.appendChild(checkHealth);
                 
         DeploymentTargetContainer.appendChild(Actions);
 

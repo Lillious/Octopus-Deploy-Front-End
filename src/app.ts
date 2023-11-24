@@ -2,13 +2,43 @@ import * as db from "./controllers/db_controller";
 import { randomBytes } from './utility/hash';
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
+import https from 'https';
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 const app = express();
-const port = process.env.PORT || 8080;
-const host = process.env.HOST || "0.0.0.0";
+
+// Certificate Setup
+const _cert = path.join(__dirname, "./certs/cert.crt");
+const _ca = path.join(__dirname, "./certs/cert.ca-bundle");
+const _key = path.join(__dirname, "./certs/cert.key");
+let _https = false;
+
+if (fs.existsSync(_cert) && fs.existsSync(_ca) && fs.existsSync(_key)) {
+  _https = true;
+}
+
+const cert = _https ? fs.readFileSync(_cert, "utf8") : "";
+const ca = _https ? fs.readFileSync(_ca, "utf8") : "";
+const key = _https ? fs.readFileSync(_key, "utf8") : "";
+
+const credentials = {
+  cert: cert,
+  ca: ca,
+  key: key,
+};
+
+if (_https) {
+  app.use((req: any, res: any, next: any) => {
+    if (!req.secure) {
+      res.redirect("https://" + req.headers.host + req.url);
+    } else {
+      next();
+    }
+  });
+}
 
 // Swagger Documentation
 const options: swaggerJsdoc.Options = {
@@ -62,10 +92,16 @@ app.use(api);
 app.use("/",express.static(path.join(__dirname, "/www/public/")));
 app.use("/dashboard",express.static(path.join(__dirname, "/www/dashboard/")));
 
-app.listen(port as number, host as string, () => {
-    console.log(`Server started at http://localhost:${port}`);
-    console.log(`Swagger docs available at http://localhost:${port}${docsPath}`);
+// Start express with https if the certificates are present
+app.listen(80, () => {
+  console.log(`Server started at http://localhost`);
+  console.log(`Swagger docs available at http://localhost${docsPath}`);
 });
+
+// Disable https for testing
+if (_https) {
+  https.createServer(credentials, app).listen(443);
+}
 
 app.use("*", (req, res) => {
     res.status(404).redirect("/");
