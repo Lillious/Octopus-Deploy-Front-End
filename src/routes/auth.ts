@@ -1,5 +1,5 @@
 import express from 'express';
-import { ValidateAPIKey, Authenticate, GetDatabaseByName, ValidateSession, CreateSession, GetAPIKey } from '../controllers/db_controller';
+import * as db_controller from '../controllers/db_controller';
 import { hash, randomBytes } from '../utility/hash';
 export const router = express.Router();
 const apiPath = '/api/v1';
@@ -18,19 +18,19 @@ router.all(`${apiPath}/*`, (req, res, next) => {
         error: "INVALID_SESSION"
     });
 
-    const auth = ValidateSession(username, session);
+    const auth = db_controller.ValidateSession(username, session);
     if (!auth) return res.status(403).send({
         error: "INVALID_SESSION"
     });
 
     // Get API Key
-    const key = GetAPIKey(username);
+    const key = db_controller.GetAPIKey(username);
     if (!key) return res.status(403).send({
         error: "INVALID_API_KEY"
     });
 
     // Validate API Key
-    const valid = ValidateAPIKey(session);
+    const valid = db_controller.ValidateAPIKey(session);
     if (!valid) return res.status(403).send({
         error: "INVALID_API_KEY"
     });
@@ -40,7 +40,7 @@ router.all(`${apiPath}/*`, (req, res, next) => {
 
 function CheckAPIAccess(req: any, permission: string) {
     const permissions: { [key: string]: number } = { none: 0, read: 1, write: 2, admin: 3 };
-    const access = ValidateAPIKey(getCookie(req.headers.cookie, "session") as string) || false;
+    const access = db_controller.ValidateAPIKey(getCookie(req.headers.cookie, "session") as string) || false;
     return access && access >= permissions[permission.toLowerCase()];
 }
 
@@ -77,7 +77,7 @@ router.all(`/dashboard/*`, (req, res, next) => {
     res.setHeader('Cache-Control', 'max-age=600');
     if (!req?.cookies?.username || !req?.cookies?.session) return res.status(403).redirect('/');
 
-    const auth = ValidateSession(req.cookies.username, req.cookies.session);
+    const auth = db_controller.ValidateSession(req.cookies.username, req.cookies.session);
     if (!auth) return res.status(403).redirect('/');
 
     next();
@@ -86,7 +86,7 @@ router.all(`/dashboard/*`, (req, res, next) => {
 router.get('/', (req, res, next) => {
     // If the user is already logged in, redirect to dashboard
     if (req?.cookies?.username && req?.cookies?.session) {
-        const auth = ValidateSession(req.cookies.username, req.cookies.session);
+        const auth = db_controller.ValidateSession(req.cookies.username, req.cookies.session);
         if (auth) return res.redirect('/dashboard');
         // Clear cookies if session is invalid
         res.clearCookie('session');
@@ -104,8 +104,8 @@ router.post('/login', (req, res) => {
         }
     );
 
-    const db = GetDatabaseByName("users.sqlite");
-    const result = Authenticate(db, req.body.username, hash(req.body.password)) as any;
+    const db = db_controller.GetDatabaseByName("users.sqlite");
+    const result = db_controller.Authenticate(db, req.body.username, hash(req.body.password)) as any;
 
     if (result.length > 0) {
         const session = randomBytes(32);
@@ -119,7 +119,7 @@ router.post('/login', (req, res) => {
             httpOnly: true,
         });
 
-        CreateSession(req.body.username.toLowerCase(), session);
+        db_controller.CreateSession(req.body.username.toLowerCase(), session);
         res.redirect('/dashboard');
     } else {
         return res.status(403).redirect('/');
@@ -127,6 +127,8 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
+    if (!req?.cookies?.username || !req?.cookies?.session) return res.status(403).redirect('/');
+    db_controller.DeleteSession(req.cookies.username, req.cookies.session);
     res.clearCookie('session');
     res.clearCookie('username');
     res.redirect('/');

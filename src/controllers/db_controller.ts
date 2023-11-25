@@ -55,6 +55,12 @@ export const CreateSession = (username: string, session: string) => {
     return Query(db, `INSERT INTO sessions (username, session, created_at) VALUES ('${username.toLowerCase()}', '${session}', datetime('now'))`);
 }
 
+export const DeleteSession = (username: string, session: string) => {
+    const db = GetDatabaseByName("sessions.sqlite");
+    Query(db, `DELETE FROM sessions WHERE username='${username.toLowerCase()}' AND session='${session}'`);
+    return;
+}
+
 export const ValidateSession = (username: string, session: string) => {
     const db = GetDatabaseByName("sessions.sqlite");
     const result = Query(db, `SELECT * FROM sessions WHERE username='${username.toLowerCase()}' AND session='${session}'`);

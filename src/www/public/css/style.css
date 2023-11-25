@@ -9,12 +9,12 @@
     --orange: #db933b;
     --placeholder : rgba(242, 248, 253, 0.5);
     --box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
-    --nav-height: 25px;
-    --nav-width: 200px;
+    --nav-height: 10px;
+    --nav-width: 50px;
     --font-small: 15px;
     --font-medium-small: 16px;
     --font-medium: 18px;
-    --font-large: 24px;
+    --font-large: 22px;
 }
 
 ::-webkit-scrollbar {
@@ -31,17 +31,6 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
-}
-
-@media only screen and (max-width: 980px) {
-    :root {
-        --nav-width: 150px;
-    }
-
-    .notification {
-        max-width: 300px;
-        line-height: 1.5;
-    }
 }
 
 body {
@@ -156,6 +145,7 @@ nav {
     font-size: var(--font-large);
     box-shadow: var(--box-shadow);
     width: 100%;
+    border-bottom: 1px solid #0b6db8;
 }
 
 side-nav {
@@ -169,7 +159,7 @@ side-nav {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: left;
+    align-items: center;
     width: var(--nav-width);
     height: 100vh;
     font-size: var(--font-medium-small);
@@ -179,7 +169,7 @@ side-nav {
 side-nav ul {
     list-style: none;
     padding: 0;
-    margin: 150px 0 0 0;
+    margin: 80px 0 0 0;
 }
 
 side-nav ul li {
@@ -188,10 +178,19 @@ side-nav ul li {
     transition: 0.2s;
 }
 
-side-nav ul li:hover {
+side-nav ul li:not(.logout):hover {
     cursor: pointer;
     color: var(--quaternary);
-    background-color: var(--secondary);
+    transition: 0.2s;
+}
+
+side-nav ul li.logout {
+    position: absolute;
+    bottom: 0;
+}
+side-nav ul li.logout:hover {
+    cursor: pointer;
+    color: var(--red);
     transition: 0.2s;
 }
 
@@ -216,7 +215,7 @@ side-nav ul li:hover {
 
 .container {
     position: absolute;
-    top: 65px;
+    top: 50px;
     left: var(--nav-width);
     right: 0;
     bottom: 0;
@@ -251,7 +250,7 @@ ul {
 
 #deployment-targets .deployment-target .roles .role, #deployment-targets .deployment-target .actions .action, #deployment-history .deployment .actions .action {
     display: inline-block;
-    padding: 5px 10px;
+    padding: 4px 8px;
     margin: 0 5px;
     border-radius: 5px;
     background-color: var(--tertiary);
@@ -396,4 +395,9 @@ ul {
 
 .notification-warning {
     border-right: 5px solid var(--yellow);
+}
+
+.material-icons {
+    -webkit-user-select: none;
+    user-select: none;
 }
