@@ -52,7 +52,7 @@ export const ValidateAPIKey = (session: string) => {
 export const CreateSession = (username: string, session: string) => {
     const db = GetDatabaseByName("sessions.sqlite");
     Query(db, `DELETE FROM sessions WHERE username='${username.toLowerCase()}'`);
-    return Query(db, `INSERT INTO sessions (username, session) VALUES ('${username.toLowerCase()}', '${session}')`);
+    return Query(db, `INSERT INTO sessions (username, session, created_at) VALUES ('${username.toLowerCase()}', '${session}', datetime('now'))`);
 }
 
 export const ValidateSession = (username: string, session: string) => {
@@ -67,4 +67,10 @@ export const GetAPIKey = (username: string) => {
     const result = Query(db, `SELECT * FROM keys WHERE username='${username.toLowerCase()}'`);
     if (result.length > 0) return (result[0] as { key: string }).key;
     return undefined;
+}
+
+export const ClearInactiveSession = () => {
+    const db = GetDatabaseByName("sessions.sqlite");
+    Query(db, `DELETE FROM sessions WHERE created_at < datetime('now', '-1 day')`);
+    return;
 }

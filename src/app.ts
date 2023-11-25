@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import("./utility/jobs");
 const app = express();
 
 // Certificate Setup
@@ -114,7 +115,7 @@ const db_sessions = db.CreateDatabase("sessions.sqlite");
 
 db.CreateTable(db_users, "users", "id INTEGER PRIMARY KEY, username TEXT, email TEXT, password TEXT");
 db.CreateTable(db_api_keys, "keys", "id INTEGER PRIMARY KEY, username TEXT, key TEXT, access_level INTEGER");
-db.CreateTable(db_sessions, "sessions", "id INTEGER PRIMARY KEY, session TEXT, username TEXT");
+db.CreateTable(db_sessions, "sessions", "id INTEGER PRIMARY KEY, session TEXT, username TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP");
 
 // Create a test user
 db.CreateUser(db_users, "user", "user@example.com", "1234");
