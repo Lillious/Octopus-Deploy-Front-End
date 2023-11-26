@@ -4,6 +4,8 @@ if (!location.search.includes('id=') || !location.search.includes('space=') || !
 
 // Get the name= query string value
 const name = location.search.split('name=')[1].split('&')[0].replaceAll('%20', ' ');
+const id = location.search.split('id=')[1].split('&')[0];
+const space = location.search.split('space=')[1].split('&')[0];
 
 const breadcrumbs = document.getElementById('breadcrumbs');
 if (breadcrumbs) {
@@ -12,7 +14,7 @@ if (breadcrumbs) {
 
 const Deployments = async () => {
     try {
-        const response = await fetch(`/api/v1/deployment-history${location.search}`,
+        const response = await fetch(`/api/v1/deployment-history/?id=${id}&space=${space}`,
         {
             method: 'GET'
         });

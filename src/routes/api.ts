@@ -279,6 +279,37 @@ router.get(`${apiPath}/deployment-history`, async (req, res) => {
     res.send(result);
 });
 
+router.get(`${apiPath}/deployment-target-environments`, async (req, res) => {
+    /**
+     * @openapi
+     * '/api/v1/deployment-target-environments{space}':
+     *  get:
+     *      description: Get a list of deployment target environments
+     *      tags:
+     *      - Deployment Target
+     *      responses:
+     *          200:
+     *              description: List of deployment target environments
+     *          400:
+     *              description: Invalid ID
+     *          500:
+     *              description: Internal server error
+     */
+    try {
+
+        if (!req?.query?.space) return res.status(400).send({
+            error: "Space is required"
+        });
+
+        const result = await Octopus.Environment.List(req.query.space as string);
+        return res.status(200).send(result);
+    } catch (error) {
+        return res.status(400).send({
+            error: error
+        });
+    }
+});
+
 // Tasks API
 router.get(`${apiPath}/deployment-tasks`, async (req, res) => {
     /**
@@ -358,29 +389,6 @@ router.post(`${apiPath}/deployment-task-rerun`, async (req, res) => {
     });
 
     const result = await Octopus.Task.ReRun(req.body.id as string);
-    res.send(result);
-});
-
-// Environment API
-router.get(`${apiPath}/environments`, async (req, res) => {
-    /**
-     * @openapi
-     * '/api/v1/environments':
-     *  get:
-     *      description: Get a list of environments
-     *      tags:
-     *      - Environments
-     *      responses:
-     *          200:
-     *              description: List of environments
-     *          400:
-     *              description: Invalid credentials
-     *          403:
-     *              description: Invalid session
-     *          500:
-     *              description: Internal server error
-     */
-    const result = await Octopus.Environment.List();
     res.send(result);
 });
 

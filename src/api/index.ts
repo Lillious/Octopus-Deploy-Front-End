@@ -132,7 +132,7 @@ const Octopus = {
                 'SpaceId': space
             }
             return await Octopus.Task.Create(task);
-        }
+        },
     },
 
     Task: {
@@ -151,12 +151,8 @@ const Octopus = {
     },
 
     Environment: {
-        List: async function () {
-            return await client.get("/environments");
-        },
-        Find: async function (id: string) {
-            if (!id) throw new Error("id is required");
-            return await client.get(`/environments/${id}`);
+        List: async function (space: string) {
+            return await client.get(`/${space}/environments/all`);
         }
     },
 

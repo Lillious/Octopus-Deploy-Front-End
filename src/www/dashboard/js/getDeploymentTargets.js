@@ -44,6 +44,20 @@ const UpdateDeploymentTarget = async (id, space) => {
     }
 }
 
+const GetEnvironments = async (space) => {
+    try {
+        const response = await fetch(`/api/v1/deployment-target-environments/?space=${space}`,
+        {
+            method: 'GET'
+        });
+        const data = await response.json();
+        return data;
+    }
+    catch (error) {
+        return error;
+    }
+}
+
 (async () => {
 
     const result = await DeploymentTargets();
@@ -53,13 +67,16 @@ const UpdateDeploymentTarget = async (id, space) => {
         createDeploymentTargetUI(result.Items[item]);
     }
 
-    function createDeploymentTargetUI (DeploymentTarget) {
+    async function createDeploymentTargetUI (DeploymentTarget) {
+        const Environments = await GetEnvironments(DeploymentTarget.SpaceId);
         const container = document.getElementById('deployment-targets');
         if (!container) return console.error('No container found');
 
+        // Deployment Target Container
         const DeploymentTargetContainer = document.createElement('div');
         DeploymentTargetContainer.classList.add('deployment-target');
-        
+
+        // Deployment Target Name
         const DeploymentTargetName = document.createElement('h3');
         DeploymentTargetName.innerText = DeploymentTarget.Name;
         DeploymentTargetName.classList.add('title');
@@ -68,6 +85,27 @@ const UpdateDeploymentTarget = async (id, space) => {
         });
         DeploymentTargetContainer.appendChild(DeploymentTargetName);
 
+        // Health Status
+        const Health = document.createElement('div');
+        Health.classList.add('health');
+        Health.innerText = DeploymentTarget.HealthStatus || 'Unknown';
+        if (DeploymentTarget.HealthStatus === 'Healthy') {
+            Health.classList.add('healthy');
+        }
+        DeploymentTargetContainer.appendChild(Health);
+
+        // Environments
+        const DeploymentTargetEnvironments = document.createElement('ul');
+        DeploymentTargetEnvironments.classList.add('environments');
+        Environments.forEach(element => {
+            const DeploymentTargetEnvironment = document.createElement('li');
+            DeploymentTargetEnvironment.classList.add('environment');
+            DeploymentTargetEnvironment.innerText = element.Name;
+            DeploymentTargetEnvironments.appendChild(DeploymentTargetEnvironment);
+        });
+        DeploymentTargetContainer.appendChild(DeploymentTargetEnvironments);
+
+        // Roles
         const DeploymentTargetRoles = document.createElement('ul');
         DeploymentTargetRoles.classList.add('roles');
         for (role in DeploymentTarget.Roles) {
@@ -76,23 +114,13 @@ const UpdateDeploymentTarget = async (id, space) => {
             DeploymentTargetRole.innerText = DeploymentTarget.Roles[role];
             DeploymentTargetRoles.appendChild(DeploymentTargetRole);
         }
-
-        container.appendChild(DeploymentTargetContainer);
-
-        const Health = document.createElement('div');
-        Health.classList.add('health');
-        Health.innerText = DeploymentTarget.HealthStatus || 'Unknown';
-        if (DeploymentTarget.HealthStatus === 'Healthy') {
-            Health.classList.add('healthy');
-        }
-        
-        DeploymentTargetContainer.appendChild(Health);
-
         DeploymentTargetContainer.appendChild(DeploymentTargetRoles);
 
+        // Actions
         const Actions = document.createElement('ui');
         Actions.classList.add('actions');
 
+        // Update Action
         if (!DeploymentTarget.HasLatestCalamari) {
             const Update = document.createElement('li');
             Update.classList.add('action');
@@ -113,6 +141,7 @@ const UpdateDeploymentTarget = async (id, space) => {
             });
         }
 
+        // Disabled Action
         if (DeploymentTarget.IsDisabled) {
             const Disable = document.createElement('li');
             Disable.classList.add('action');
@@ -121,6 +150,7 @@ const UpdateDeploymentTarget = async (id, space) => {
             Actions.appendChild(Disable);
         }
 
+        // Check Health Action
         const checkHealth = document.createElement('li');
         checkHealth.classList.add('action');
         checkHealth.classList.add('check-health');
@@ -149,10 +179,11 @@ const UpdateDeploymentTarget = async (id, space) => {
                 
         DeploymentTargetContainer.appendChild(Actions);
 
+        // Status Summary
         const StatusSummary = document.createElement('p');
         StatusSummary.classList.add('status-summary');
         StatusSummary.innerText = DeploymentTarget.StatusSummary;
         DeploymentTargetContainer.appendChild(StatusSummary);
-
+        container.appendChild(DeploymentTargetContainer);
     }
 })();

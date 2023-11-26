@@ -7,11 +7,12 @@
     --green : #029656;
     --red : #d43f3f;
     --orange: #db933b;
+    --purple: #7932a8;
     --placeholder : rgba(242, 248, 253, 0.5);
     --box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
     --nav-height: 10px;
     --nav-width: 50px;
-    --font-small: 15px;
+    --font-small: 14px;
     --font-medium-small: 16px;
     --font-medium: 18px;
     --font-large: 22px;
@@ -167,7 +168,6 @@ side-nav {
 }
 
 side-nav ul {
-    list-style: none;
     padding: 0;
     margin: 80px 0 0 0;
 }
@@ -204,8 +204,8 @@ side-nav ul li.logout:hover {
 
 #breadcrumbs {
     position: absolute;
-    left: 100px;
-    margin-top: 5px;
+    left: 95px;
+    margin-top: 3px;
     font-size: var(--font-small);
     white-space: nowrap;
     overflow: hidden;
@@ -234,11 +234,10 @@ side-nav ul li.logout:hover {
     width: 100%;
     padding: 0px 0;
     border-bottom: 1px solid var(--tertiary);
-
+    margin-bottom: 25px;
 }
 
-#deployment-targets .deployment-target .roles, #deployment-targets .deployment-target .actions {
-    list-style: none;
+#deployment-targets .deployment-target .roles, #deployment-targets .deployment-target .actions, #deployment-targets .deployment-target .environments {
     -webkit-user-select: none;
     user-select: none;
     width: 100%;
@@ -246,9 +245,11 @@ side-nav ul li.logout:hover {
 
 ul {
     padding-inline-start: 0px;
+    list-style: none;
 }
 
-#deployment-targets .deployment-target .roles .role, #deployment-targets .deployment-target .actions .action, #deployment-history .deployment .actions .action {
+#deployment-targets .deployment-target .roles .role, #deployment-targets .deployment-target .actions .action, #deployment-history .deployment .actions .action
+, #deployment-targets .deployment-target .environments .environment {
     display: inline-block;
     padding: 4px 8px;
     margin: 0 5px;
@@ -256,23 +257,27 @@ ul {
     background-color: var(--tertiary);
     color: var(--primary);
     margin-bottom: 10px;
+    font-weight: 600;
+}
+
+#deployment-targets .deployment-target .environments .environment {
+    background-color: var(--purple);
+    margin-bottom: 5px;
 }
 
 .title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
 }
-#deployment-targets .deployment-target .roles .role {
+
+#deployment-targets .deployment-target .roles .role, #deployment-targets .deployment-target .environments .environment {
     padding: 3px 5px;
     font-size: var(--font-small);
-    font-weight: 600;
 }
 
 #deployment-targets .deployment-target .actions .action {
     cursor: pointer;
-    font-weight: 600;
 }
 
 #deployment-targets .deployment-target .health {
@@ -284,6 +289,7 @@ ul {
     background-color: var(--red);
     font-size: var(--font-small);
     font-weight: 600;
+    margin-top: 16px;
 }
 
 #deployment-targets .deployment-target .healthy {
@@ -329,6 +335,7 @@ ul {
 
 #deployment-targets .deployment-target .title {
     cursor: pointer;
+    margin: 0;
 }
 
 #deployment-history .deployment {
