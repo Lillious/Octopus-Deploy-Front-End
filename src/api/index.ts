@@ -147,6 +147,10 @@ const Octopus = {
         ReRun: async function (id: string) {
             if (!id) throw new Error("id is required");
             return await client.post(`/tasks/rerun/${id}`);
+        },
+        Find: async function (id: string) {
+            if (!id) throw new Error("id is required");
+            return await client.get(`/tasks/${id}`);
         }
     },
 

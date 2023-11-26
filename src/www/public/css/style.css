@@ -266,9 +266,16 @@ ul {
 }
 
 .title {
+    transition: 0.2s;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+#deployment-targets .deployment-target .title:hover {
+    transition: 0.2s;
+    cursor: pointer;
+    color: var(--quaternary);
 }
 
 #deployment-targets .deployment-target .roles .role, #deployment-targets .deployment-target .environments .environment {
@@ -294,6 +301,10 @@ ul {
 
 #deployment-targets .deployment-target .healthy {
     background-color: var(--green);
+}
+
+#deployment-targets .deployment-target .checking {
+    background-color: var(--orange);
 }
 
 #deployment-targets .deployment-target .actions .update {
@@ -345,17 +356,11 @@ ul {
 }
 
 #deployment-history .deployment .completed-time {
-    display: inline-block;
-    padding: 3px 5px;
     border-radius: 5px;
-    text-align: center;
+    text-align: left;
     min-width: 140px;
-    font-weight: 600;
+    color: var(--placeholder);
     font-size: var(--font-small);
-}
-
-#deployment-history .deployment .completed-time .failed {
-    background-color: var(--red);
 }
 
 #deployment-history .deployment .success {
@@ -407,4 +412,34 @@ ul {
 .material-icons {
     -webkit-user-select: none;
     user-select: none;
+}
+
+.task-success {
+    background-color: var(--green);
+    border-radius: 5px;
+}
+
+.task-failed {
+    background-color: var(--red);
+    border-radius: 5px;
+}
+
+.task-queued {
+    /* animate rotation */
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+.status {
+    float: right;
+    margin-top: -5px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(359deg);
+    }
 }

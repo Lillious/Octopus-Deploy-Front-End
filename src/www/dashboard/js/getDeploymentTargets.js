@@ -13,7 +13,31 @@ const DeploymentTargets = async () => {
 
 const CheckConnectionHealth = async (id) => {
     try {
-        const response = await fetch(`/api/v1/deployment-targets/check-connection?id=${id}`, {
+        const response = await fetch(`/api/v1/deployment-task`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "Name": 'Health',
+                "Description": 'Check Connection',
+                "Arguments": {
+                    "Timeout": '00:01:00',
+                    "MachineIds": [id],
+                    "OnlyTestConnection": true
+                }
+            })
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        return error;
+    }
+}
+
+const GetDeploymentTask = async (id) => {
+    try {
+        const response = await fetch(`/api/v1/deployment-task/?id=${id}`, {
             method: 'GET'
         });
         const data = await response.json();
@@ -158,20 +182,34 @@ const GetEnvironments = async (space) => {
         checkHealth.addEventListener('click', async () => {
             if (checkHealth.classList.contains('disabled')) return;
             checkHealth.classList.add('disabled');
-            setTimeout(() => {
-                checkHealth.classList.remove('disabled');
-            }, 5000);
+            Health.classList.remove('healthy');
+            Health.innerText = 'Checking...';
+            Health.classList.add('checking');
             const response = await CheckConnectionHealth(DeploymentTarget.Id);
-            if (response.error) return window.Notification('error', 'Failed to check health');
-            Health.innerText = response.Status || 'Unknown';
-            if (response.Status !== 'Healthy') {
-                Health.classList.remove('healthy');
-                window.Notification('error', `Unable to connect to ${DeploymentTarget.Name}`);
-            } else {
-                if (!Health.classList.contains('healthy')) {
-                    Health.classList.add('healthy');
-                }
-                window.Notification('success', `Successfully connected to ${DeploymentTarget.Name}`);
+            const status = await GetDeploymentTask(response.Id);
+            if (!response) return window.Notification('error', 'Failed to check health');
+            if (!status) return window.Notification('error', 'Failed to check health');
+            window.Notification('success', `Checking health of ${DeploymentTarget.Name}`);
+            if (status.State === 'Queued' || status.State === 'Executing') {
+                const check = setInterval(async () => {
+                    const status = await GetDeploymentTask(response.Id);
+                    if (status.State === 'Queued' || status.State === 'Executing') return;
+                    if (status.State === 'Success') {
+                        Health.innerText = 'Healthy';
+                        Health.classList.remove('checking');
+                        Health.classList.add('healthy');
+                        checkHealth.classList.remove('disabled');
+                        window.Notification('success', `Successfully checked health of ${DeploymentTarget.Name}`);
+                        clearInterval(check);
+                    } else {
+                        Health.innerText = 'Unavailable';
+                        Health.classList.remove('checking');
+                        Health.classList.add('unhealthy');
+                        checkHealth.classList.remove('disabled');
+                        window.Notification('error', `Failed to check health of ${DeploymentTarget.Name}`);
+                        clearInterval(check);
+                    }
+                }, 5000);
             }
         });
 

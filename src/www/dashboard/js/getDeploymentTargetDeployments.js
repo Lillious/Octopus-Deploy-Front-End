@@ -28,34 +28,49 @@ const Deployments = async () => {
 
 (async () => {
     const result = await Deployments();
+    console.log(result);
     if (result.error) return window.Notification('error', 'Failed to get deployment target history');
     for (item in result.Items) {
         createDeploymentHistoryUI(result.Items[item]);
     }
 
     function createDeploymentHistoryUI(Deployment) {
+        // Deployment Container
         const container = document.getElementById('deployment-history');
         if (!container) return console.error('No container found');
-
         const DeploymentContainer = document.createElement('div');
         DeploymentContainer.classList.add('deployment');
 
+        // Deployment Name
         const DeploymentName = document.createElement('h3');
         DeploymentName.innerText = Deployment.Description;
         DeploymentName.classList.add('title');
         DeploymentContainer.appendChild(DeploymentName);
 
-        const CompletedTime = document.createElement('p');
-        const date = new Date(Deployment.CompletedTime);
-        const options = { month: "long", day: "numeric", year: "numeric" };
-        const formattedDate = date.toLocaleDateString("en-US", options);
-        CompletedTime.innerText = formattedDate;
-        CompletedTime.classList.add('completed-time');
-        if (Deployment.State === 'Success') {
-            CompletedTime.classList.add('success');
+        // Deployment Task Status
+        const status = document.createElement('div');
+        if (Deployment.IsCompleted === true) {
+            status.innerText = Deployment.FinishedSuccessfully
+                ? 'done'
+                : 'close';
+        } else {
+            status.innerText = 'cached';
         }
-        DeploymentContainer.appendChild(CompletedTime);
 
+        if (Deployment.FinishedSuccessfully && Deployment.IsCompleted) {
+            status.classList.add('task-success');
+        }
+        else if (!Deployment.FinishedSuccessfully && Deployment.IsCompleted) {
+            status.classList.add('task-failed');
+        } else {
+            status.classList.add('task-queued');
+        }
+        
+        status.classList.add('status');
+        status.classList.add('material-icons');
+        DeploymentContainer.appendChild(status);
+
+        // Deployment Task Actions
         const Actions = document.createElement('ui');
         Actions.classList.add('actions');
 
@@ -91,6 +106,17 @@ const Deployments = async () => {
         }
 
         DeploymentContainer.appendChild(Actions);
+
+        // Deployment Task Completed Time
+        if (Deployment.CompletedTime) {
+            const CompletedTime = document.createElement('p');
+            const date = new Date(Deployment.CompletedTime);
+            const options = { month: "long", day: "numeric", year: "numeric" };
+            const formattedDate = date.toLocaleDateString("en-US", options);
+            CompletedTime.innerText = `${formattedDate} - ${Deployment.Duration}`;
+            CompletedTime.classList.add('completed-time');
+            DeploymentContainer.appendChild(CompletedTime);
+        }
 
         container.appendChild(DeploymentContainer);
     }

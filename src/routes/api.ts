@@ -14,14 +14,14 @@ const serverHash = hash(await server.text());
 const client = await file.text();
 const clientHash = hash(client.toString());
 
-// If the hashes are different, update the API
-if (serverHash !== clientHash) {
-    const result = await fetch(url);
-    const text = await result.text();
-    console.log("API is out of date, updating...");
-    Bun.write(file, text);
-    console.log("API updated - Please restart the server.");
-}
+// // If the hashes are different, update the API
+// if (serverHash !== clientHash) {
+//     const result = await fetch(url);
+//     const text = await result.text();
+//     console.log("API is out of date, updating...");
+//     Bun.write(file, text);
+//     console.log("API updated - Please restart the server.");
+// }
 
 router.post(`/generate-api-key`, (req, res) => {
     /**
@@ -337,6 +337,32 @@ router.get(`${apiPath}/deployment-tasks`, async (req, res) => {
     res.send(result);
 });
 
+router.get(`${apiPath}/deployment-task`, async (req, res) => {
+    /**
+     * @openapi
+     * '/api/v1/deployment-tasks{id}':
+     *  get:
+     *      description: List a deployment task
+     *      tags:
+     *      - Tasks
+     *      responses:
+     *          200:
+     *              description: Task listed successfully
+     *          400:
+     *              description: Invalid credentials
+     *          403:
+     *              description: Invalid session
+     *          500:
+     *              description: Internal server error
+     */
+    if (!req?.query?.id) return res.status(400).send({
+        error: "ID is required"
+    });
+
+    const result = await Octopus.Task.Find(req.query.id as string);
+    res.send(result);
+});
+
 // Create Task
 router.post(`${apiPath}/deployment-task`, async (req, res) => {
     /**
@@ -356,12 +382,11 @@ router.post(`${apiPath}/deployment-task`, async (req, res) => {
      *          500:
      *              description: Internal server error
      */
-
-    if (!req?.body?.task) return res.status(400).send({
+    if (!req?.body) return res.status(400).send({
         error: "Task is required"
     });
 
-    const result = await Octopus.Task.Create(req.body.task);
+    const result = await Octopus.Task.Create(req.body);
     res.send(result);
 });
 
@@ -433,9 +458,9 @@ router.get(`${apiPath}/feeds`, async (req, res) => {
     const result = await Octopus.Feed.List();
     res.send(result);
 });
-
 // Connection API
 router.get(`${apiPath}/deployment-targets/check-connection`, async (req, res) => {
+
     /**
      * @openapi
      * '/api/v1/deployment-targets/check-connection{id}':
