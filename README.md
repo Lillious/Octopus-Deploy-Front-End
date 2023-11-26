@@ -1,6 +1,11 @@
 # Octopus Deploy Front End
 A custom web app for [Octopus Deploy](https://octopus.com/) leveraging a custom [API wrapper](https://github.com/Lillious/Octopus-Deploy-API-Wrapper) and a separate [authentication API](https://github.com/Lillious/Octopus-Deploy-Front-End/blob/main/src/routes/auth.ts) to manage individual user access.
 
+# Compatibility
+- [Bun](https://bun.sh/) > v1.0.14
+
+*This project is **not** compatible with any version of [NodeJS](https://nodejs.org/en/)*
+
 # Environment Variables
 ```
 API_KEY=API-SOME000000API00000000KEY00000000
