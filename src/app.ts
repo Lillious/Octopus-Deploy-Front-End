@@ -1,8 +1,6 @@
-import * as db from "./controllers/db_controller";
+import * as db_controller from "./controllers/db_controller";
 import { randomBytes } from './utility/hash';
 import express from 'express';
-import path from 'path';
-import fs from 'fs';
 import https from 'https';
 import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
@@ -11,25 +9,17 @@ import swaggerUi from 'swagger-ui-express';
 import("./utility/jobs");
 const app = express();
 
-// Certificate Setup
-const _cert = path.join(__dirname, "./certs/cert.crt");
-const _ca = path.join(__dirname, "./certs/cert.ca-bundle");
-const _key = path.join(__dirname, "./certs/cert.key");
-let _https = false;
+const cert = Bun.file(Bun.pathToFileURL(__dirname + "/certs/cert.crt").pathname);
+const ca = Bun.file(Bun.pathToFileURL(__dirname + "/certs/cert.ca-bundle").pathname);
+const key = Bun.file(Bun.pathToFileURL(__dirname + "/certs/cert.key").pathname);
 
-if (fs.existsSync(_cert) && fs.existsSync(_ca) && fs.existsSync(_key)) {
-  _https = true;
+async function CheckCertificatesExists(cert: BunFile, ca: BunFile, key: BunFile) {
+  if (await cert.exists() && await ca.exists() && await key.exists()) return true;
+  return false;
 }
 
-const cert = _https ? fs.readFileSync(_cert, "utf8") : "";
-const ca = _https ? fs.readFileSync(_ca, "utf8") : "";
-const key = _https ? fs.readFileSync(_key, "utf8") : "";
-
-const credentials = {
-  cert: cert,
-  ca: ca,
-  key: key,
-};
+const _https = await CheckCertificatesExists(cert, ca, key);
+console.log(`HTTPS: ${_https}`);
 
 if (_https) {
   app.use((req: any, res: any, next: any) => {
@@ -87,11 +77,12 @@ app.use(auth);
 
 // Import API Routes
 import { router as api } from './routes/api';
+import { BunFile } from "bun";
 app.use(api);
 
 
-app.use("/",express.static(path.join(__dirname, "/www/public/")));
-app.use("/dashboard",express.static(path.join(__dirname, "/www/dashboard/")));
+app.use("/",express.static(Bun.pathToFileURL(__dirname + "/www/public").pathname));
+app.use("/dashboard",express.static(Bun.pathToFileURL(__dirname + "/www/dashboard").pathname));
 
 // Start express with https if the certificates are present
 app.listen(80, () => {
@@ -101,7 +92,11 @@ app.listen(80, () => {
 
 // Disable https for testing
 if (_https) {
-  https.createServer(credentials, app).listen(443);
+  https.createServer({
+    cert: await cert.text(),
+    ca: await ca.text(),
+    key: await key.text(),
+  }, app).listen(443);
 }
 
 app.use("*", (req, res) => {
@@ -109,15 +104,15 @@ app.use("*", (req, res) => {
 });
 
 // Create the databases and tables
-const db_users = db.CreateDatabase("users.sqlite");
-const db_api_keys = db.CreateDatabase("api_keys.sqlite");
-const db_sessions = db.CreateDatabase("sessions.sqlite");
+const db_users = db_controller.CreateDatabase("users.sqlite");
+const db_api_keys = db_controller.CreateDatabase("api_keys.sqlite");
+const db_sessions = db_controller.CreateDatabase("sessions.sqlite");
 
-db.CreateTable(db_users, "users", "id INTEGER PRIMARY KEY, username TEXT, email TEXT, password TEXT");
-db.CreateTable(db_api_keys, "keys", "id INTEGER PRIMARY KEY, username TEXT, key TEXT, access_level INTEGER");
-db.CreateTable(db_sessions, "sessions", "id INTEGER PRIMARY KEY, session TEXT, username TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP");
+db_controller.CreateTable(db_users, "users", "id INTEGER PRIMARY KEY, username TEXT, email TEXT, password TEXT");
+db_controller.CreateTable(db_api_keys, "keys", "id INTEGER PRIMARY KEY, username TEXT, key TEXT, access_level INTEGER");
+db_controller.CreateTable(db_sessions, "sessions", "id INTEGER PRIMARY KEY, session TEXT, username TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP");
 
 // Create a test user
-db.CreateUser(db_users, "user", "user@example.com", "1234");
+db_controller.CreateUser(db_users, "user", "user@example.com", "1234");
 // Create a test API key for the test user
-db.CreateAPIKey("user", "API-1E4EC1C512A4447463751A26043F2FA0", 3);
+db_controller.CreateAPIKey("user", "API-1E4EC1C512A4447463751A26043F2FA0", 3);

@@ -1,19 +1,17 @@
 import express from 'express';
-import { GetDatabaseByName, Authenticate, CreateAPIKey, ValidateAPIKey } from '../controllers/db_controller';
-import {hash, randomBytes } from '../utility/hash';
-import path from 'path';
-import fs from 'fs';
+import * as db_controller from '../controllers/db_controller';
+import { hash, randomBytes } from '../utility/hash';
 export const router = express.Router();
 const apiPath = '/api/v1';
 import Octopus from '../api/';
 
 // Check if the API is up to date
 const url = "https://raw.githubusercontent.com/Lillious/Octopus-Deploy-API-Wrapper/main/index.ts";
-const file = path.join(__dirname, "..", "/api/index.ts");
+const file = Bun.file(Bun.pathToFileURL(__dirname + "/../api/index.ts").pathname);
 const server = await fetch(url);
 if (!server.ok) throw new Error("Unable to fetch API");
 const serverHash = hash(await server.text());
-const client = fs.readFileSync(file);
+const client = await file.text();
 const clientHash = hash(client.toString());
 
 // If the hashes are different, update the API
@@ -21,7 +19,7 @@ if (serverHash !== clientHash) {
     const result = await fetch(url);
     const text = await result.text();
     console.log("API is out of date, updating...");
-    fs.writeFileSync(file, text);
+    Bun.write(file, text);
     console.log("API updated - Please restart the server.");
 }
 
@@ -53,13 +51,13 @@ router.post(`/generate-api-key`, (req, res) => {
         error: "INVALID_ACCESS_LEVEL"
     });
 
-    const db = GetDatabaseByName("users.sqlite");
-    const result = Authenticate(db, req.body.username, hash(req.body.password)) as any;
+    const db = db_controller.GetDatabaseByName("users.sqlite");
+    const result = db_controller.Authenticate(db, req.body.username, hash(req.body.password)) as any;
 
     if (result.length > 0) {
         const key = () => {
             const key = `API-${randomBytes(16)}`.toUpperCase();
-            CreateAPIKey(req.body.username.toLowerCase(), key, req.body.access_level);
+            db_controller.CreateAPIKey(req.body.username.toLowerCase(), key, req.body.access_level);
             return key;
         }
         res.status(200).send({
