@@ -199,6 +199,7 @@ const GetEnvironments = async (space) => {
                         Health.classList.remove('checking');
                         Health.classList.add('healthy');
                         checkHealth.classList.remove('disabled');
+                        StatusSummary.innerText = `Octopus was able to successfully establish a connection with this machine on ${status.Completed}`;
                         window.Notification('success', `Successfully checked health of ${DeploymentTarget.Name}`);
                         clearInterval(check);
                     } else {
