@@ -157,7 +157,10 @@ const Octopus = {
     Environment: {
         List: async function (space: string) {
             return await client.get(`/${space}/environments/all`);
-        }
+        },
+        Find: async function (space: string, id: string) {
+            return await client.get(`/${space}/environments/${id}`);
+        },
     },
 
     Event: {

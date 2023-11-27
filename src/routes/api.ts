@@ -15,13 +15,13 @@ const client = await file.text();
 const clientHash = hash(client.toString());
 
 // // If the hashes are different, update the API
-// if (serverHash !== clientHash) {
-//     const result = await fetch(url);
-//     const text = await result.text();
-//     console.log("API is out of date, updating...");
-//     Bun.write(file, text);
-//     console.log("API updated - Please restart the server.");
-// }
+if (serverHash !== clientHash) {
+    const result = await fetch(url);
+    const text = await result.text();
+    console.log("API is out of date, updating...");
+    Bun.write(file, text);
+    console.log("API updated - Please restart the server.");
+}
 
 router.post(`/generate-api-key`, (req, res) => {
     /**
@@ -282,14 +282,14 @@ router.get(`${apiPath}/deployment-history`, async (req, res) => {
 router.get(`${apiPath}/deployment-target-environments`, async (req, res) => {
     /**
      * @openapi
-     * '/api/v1/deployment-target-environments{space}':
+     * '/api/v1/deployment-target-environments{space}/{id}':
      *  get:
-     *      description: Get a list of deployment target environments
+     *      description: Get a environment by ID
      *      tags:
      *      - Deployment Target
      *      responses:
      *          200:
-     *              description: List of deployment target environments
+     *              description: Environment listed successfully
      *          400:
      *              description: Invalid ID
      *          500:
@@ -301,7 +301,11 @@ router.get(`${apiPath}/deployment-target-environments`, async (req, res) => {
             error: "Space is required"
         });
 
-        const result = await Octopus.Environment.List(req.query.space as string);
+        if (!req?.query?.id) return res.status(400).send({
+            error: "Id is required"
+        });
+
+        const result = await Octopus.Environment.Find(req.query.space as string, req.query.id as string);
         return res.status(200).send(result);
     } catch (error) {
         return res.status(400).send({

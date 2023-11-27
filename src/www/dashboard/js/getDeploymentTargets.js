@@ -68,9 +68,9 @@ const UpdateDeploymentTarget = async (id, space) => {
     }
 }
 
-const GetEnvironments = async (space) => {
+const GetEnvironment = async (space, id) => {
     try {
-        const response = await fetch(`/api/v1/deployment-target-environments/?space=${space}`,
+        const response = await fetch(`/api/v1/deployment-target-environments/?space=${space}&id=${id}`,
         {
             method: 'GET'
         });
@@ -80,6 +80,15 @@ const GetEnvironments = async (space) => {
     catch (error) {
         return error;
     }
+}
+
+const GetAllEnvironments = async (space, ids) => {
+    const environments = [];
+    for (id in ids) {
+        const environment = await GetEnvironment(space, ids[id]);
+        environments.push(environment.Name);
+    }
+    return environments;
 }
 
 (async () => {
@@ -92,7 +101,6 @@ const GetEnvironments = async (space) => {
     }
 
     async function createDeploymentTargetUI (DeploymentTarget) {
-        const Environments = await GetEnvironments(DeploymentTarget.SpaceId);
         const container = document.getElementById('deployment-targets');
         if (!container) return console.error('No container found');
 
@@ -119,12 +127,14 @@ const GetEnvironments = async (space) => {
         DeploymentTargetContainer.appendChild(Health);
 
         // Environments
+        
+        const Environments = await GetAllEnvironments(DeploymentTarget.SpaceId, DeploymentTarget.EnvironmentIds);
         const DeploymentTargetEnvironments = document.createElement('ul');
         DeploymentTargetEnvironments.classList.add('environments');
         Environments.forEach(element => {
             const DeploymentTargetEnvironment = document.createElement('li');
             DeploymentTargetEnvironment.classList.add('environment');
-            DeploymentTargetEnvironment.innerText = element.Name;
+            DeploymentTargetEnvironment.innerText = element;
             DeploymentTargetEnvironments.appendChild(DeploymentTargetEnvironment);
         });
         DeploymentTargetContainer.appendChild(DeploymentTargetEnvironments);
