@@ -351,7 +351,7 @@ ul {
 
 #deployment-history .deployment {
     width: 100%;
-    padding: 0px 0;
+    padding: 0px 0px;
     border-bottom: 1px solid var(--tertiary);
 }
 
@@ -385,7 +385,7 @@ ul {
     right: 25px;
     background: var(--background);
     color: var(--primary);
-    padding: 15px;
+    padding: 5px 10px;
     box-shadow: var(--box-shadow);
     z-index: 1000;
     border-right: 5px solid transparent;
@@ -441,5 +441,29 @@ ul {
     }
     100% {
         transform: rotate(359deg);
+    }
+}
+
+@media only screen and (max-width: 980px) {
+    .notification {
+        right: 0;
+        left: var(--nav-width);
+        bottom: 0;
+        font-size: 12px;
+    }
+
+    .notification-error {
+        border: none;
+        border-left: 5px solid var(--red);
+    }
+
+    .notification-success {
+        border: none;
+        border-left: 5px solid var(--green);
+    }
+
+    .notification-warning {
+        border: none;
+        border-left: 5px solid var(--yellow);
     }
 }
