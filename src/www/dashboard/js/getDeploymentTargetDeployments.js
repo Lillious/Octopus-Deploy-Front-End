@@ -29,7 +29,7 @@ const Deployments = async () => {
 (async () => {
     const result = await Deployments();
     console.log(result);
-    if (result.error) return window.Notification('error', 'Failed to get deployment target history');
+    if (result.error) return window.Notify('error', 'Failed to get deployment target history');
     for (item in result.Items) {
         createDeploymentHistoryUI(result.Items[item]);
     }
@@ -90,15 +90,15 @@ const Deployments = async () => {
                 });
                 const data = await response.json();
                 if (data?.response?.status === 404) {
-                    return window.Notification('error', 'Deployment not found');
+                    return window.Notify('error', 'Deployment not found');
                 }
                 if (data?.response?.status === 400) {
-                    return window.Notification('error', 'Deployment cannot be re-run');
+                    return window.Notify('error', 'Deployment cannot be re-run');
                 }
                 if (data?.response?.status === 500) {
-                    return window.Notification('error', 'Failed to re-run deployment');
+                    return window.Notify('error', 'Failed to re-run deployment');
                 }
-                window.Notification('success', 'Deployment re-run');
+                window.Notify('success', 'Deployment re-run');
             });
 
             Actions.appendChild(reRunDeployment);

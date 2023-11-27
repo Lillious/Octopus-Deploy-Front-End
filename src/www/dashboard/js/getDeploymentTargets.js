@@ -16,7 +16,8 @@ const CheckConnectionHealth = async (id) => {
         const response = await fetch(`/api/v1/deployment-task`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
             },
             body: JSON.stringify({
                 "Name": 'Health',
@@ -36,17 +37,29 @@ const CheckConnectionHealth = async (id) => {
 }
 
 const GetDeploymentTask = async (id) => {
-    try {
-        const response = await fetch(`/api/v1/deployment-task/?id=${id}`, {
-            method: 'GET'
-        });
-        const data = await response.json();
-        return data;
-    }
-    catch (error) {
-        return error;
-    }
-}
+    return await new Promise((resolve, reject) => {
+        const interval = setInterval(async () => {
+            try {
+                const response = await fetch(`/api/v1/deployment-task/?id=${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+                const data = await response.json();
+                
+                    if (data.State === 'Success' || data.State === 'Failed') {
+                    resolve(data);
+                    clearInterval(interval);
+                }
+            } catch (error) {
+                reject(error);
+                clearInterval(interval);
+            }
+        }, 1000);
+    });
+}  
 
 const UpdateDeploymentTarget = async (id, space) => {
     try {
@@ -94,7 +107,7 @@ const GetAllEnvironments = async (space, ids) => {
 (async () => {
 
     const result = await DeploymentTargets();
-    if (result.error) return window.Notification('error', 'Failed to get deployment targets');
+    if (result.error) return window.Notify('error', 'Failed to get deployment targets');
 
     for (item in result.Items) {
         createDeploymentTargetUI(result.Items[item]);
@@ -127,7 +140,6 @@ const GetAllEnvironments = async (space, ids) => {
         DeploymentTargetContainer.appendChild(Health);
 
         // Environments
-        
         const Environments = await GetAllEnvironments(DeploymentTarget.SpaceId, DeploymentTarget.EnvironmentIds);
         const DeploymentTargetEnvironments = document.createElement('ul');
         DeploymentTargetEnvironments.classList.add('environments');
@@ -169,8 +181,8 @@ const GetAllEnvironments = async (space, ids) => {
                     Update.classList.remove('disabled');
                 }, 5000);
                 const data = await UpdateDeploymentTarget(DeploymentTarget.Id, DeploymentTarget.SpaceId);
-                if (!data) return window.Notification('error', 'Unable to update deployment target');
-                window.Notification('success', 'Successfully updated deployment target');
+                if (!data) return window.Notify('error', 'Unable to update deployment target');
+                window.Notify('success', 'Successfully updated deployment target');
                 Update.remove();
             });
         }
@@ -195,32 +207,30 @@ const GetAllEnvironments = async (space, ids) => {
             Health.classList.remove('healthy');
             Health.innerText = 'Checking...';
             Health.classList.add('checking');
-            const response = await CheckConnectionHealth(DeploymentTarget.Id);
-            const status = await GetDeploymentTask(response.Id);
-            if (!response) return window.Notification('error', 'Failed to check health');
-            if (!status) return window.Notification('error', 'Failed to check health');
-            window.Notification('success', `Checking health of ${DeploymentTarget.Name}`);
-            if (status.State === 'Queued' || status.State === 'Executing') {
-                const check = setInterval(async () => {
-                    const status = await GetDeploymentTask(response.Id);
-                    if (status.State === 'Queued' || status.State === 'Executing') return;
-                    if (status.State === 'Success') {
-                        Health.innerText = 'Healthy';
-                        Health.classList.remove('checking');
-                        Health.classList.add('healthy');
-                        checkHealth.classList.remove('disabled');
-                        StatusSummary.innerText = `Octopus was able to successfully establish a connection with this machine on ${status.Completed}`;
-                        window.Notification('success', `Successfully checked health of ${DeploymentTarget.Name}`);
-                        clearInterval(check);
-                    } else {
-                        Health.innerText = 'Unavailable';
-                        Health.classList.remove('checking');
-                        Health.classList.add('unhealthy');
-                        checkHealth.classList.remove('disabled');
-                        window.Notification('error', `Failed to check health of ${DeploymentTarget.Name}`);
-                        clearInterval(check);
-                    }
-                }, 5000);
+            window.Notify('success', `Checking health of ${DeploymentTarget.Name}`);
+            const response = await CheckConnectionHealth(DeploymentTarget.Id).catch(error => {
+                window.Notify('error', 'Failed to check health');
+                return;
+            });
+            const status = await asyncCall(response.Id).catch(error => {
+                window.Notify('error', 'Failed to check health');
+                return;
+            });
+            if (status.State === 'Success') {
+                Health.innerText = 'Healthy';
+                Health.classList.remove('checking');
+                Health.classList.add('healthy');
+                checkHealth.classList.remove('disabled');
+                StatusSummary.innerText = `Octopus was able to successfully establish a connection with this machine on ${status.Completed}`;
+                window.Notify('success', `Successfully checked health of ${DeploymentTarget.Name}`);
+                return;
+            } else {
+                Health.innerText = 'Unavailable';
+                Health.classList.remove('checking');
+                Health.classList.add('unhealthy');
+                checkHealth.classList.remove('disabled');
+                window.Notify('error', `Failed to check health of ${DeploymentTarget.Name}`);
+                return;
             }
         });
 
@@ -234,5 +244,10 @@ const GetAllEnvironments = async (space, ids) => {
         StatusSummary.innerText = DeploymentTarget.StatusSummary;
         DeploymentTargetContainer.appendChild(StatusSummary);
         container.appendChild(DeploymentTargetContainer);
+
+        async function asyncCall(id) {
+            const result = await GetDeploymentTask(id);
+            return result;
+        }
     }
 })();

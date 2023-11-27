@@ -1,4 +1,4 @@
-export default function Notification(type, message) {
+export default function Notify(type, message) {
 	const notification = document.createElement("div");
 	notification.classList.add("notification");
 	notification.classList.add(`notification-${type}`);
