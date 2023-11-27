@@ -162,7 +162,6 @@ side-nav {
     justify-content: space-between;
     align-items: center;
     width: var(--nav-width);
-    height: 100vh;
     font-size: var(--font-medium-small);
     box-shadow: var(--box-shadow);
 }
