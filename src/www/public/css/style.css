@@ -8,6 +8,7 @@
     --red : #d43f3f;
     --orange: #db933b;
     --purple: #7932a8;
+    --foreground : #1F303F;
     --placeholder : rgba(242, 248, 253, 0.5);
     --box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
     --nav-height: 10px;
@@ -231,9 +232,9 @@ side-nav ul li.logout:hover {
 
 #deployment-targets .deployment-target {
     width: 100%;
-    padding: 0px 0;
-    border-bottom: 1px solid var(--tertiary);
     margin-bottom: 25px;
+    background: var(--foreground);
+    border-radius: 5px;
 }
 
 #deployment-targets .deployment-target .roles, #deployment-targets .deployment-target .actions, #deployment-targets .deployment-target .environments {
@@ -251,17 +252,15 @@ ul {
 , #deployment-targets .deployment-target .environments .environment {
     display: inline-block;
     padding: 4px 8px;
-    margin: 0 5px;
+    padding-left: 5px;
     border-radius: 5px;
     background-color: var(--tertiary);
     color: var(--primary);
-    margin-bottom: 10px;
     font-weight: 600;
 }
 
 #deployment-targets .deployment-target .environments .environment {
     background-color: var(--purple);
-    margin-bottom: 5px;
 }
 
 .title {
@@ -269,6 +268,14 @@ ul {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-top: 0px;
+    padding: 10px 15px;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+}
+
+#deployment-targets .deployment-target .title, #deployment-history .deployment .title {
+    background: var(--secondary);
 }
 
 #deployment-targets .deployment-target .title:hover {
@@ -279,11 +286,16 @@ ul {
 
 #deployment-targets .deployment-target .roles .role, #deployment-targets .deployment-target .environments .environment {
     padding: 3px 5px;
+    margin-left: 15px;
     font-size: var(--font-small);
 }
 
-#deployment-targets .deployment-target .actions .action {
+#deployment-targets .deployment-target .actions .action:hover {
     cursor: pointer;
+}
+
+#deployment-targets .deployment-target .actions .action {
+    margin-left: 15px;
 }
 
 #deployment-targets .deployment-target .health {
@@ -295,7 +307,7 @@ ul {
     background-color: var(--red);
     font-size: var(--font-small);
     font-weight: 600;
-    margin-top: 16px;
+    margin-right: 15px;
 }
 
 #deployment-targets .deployment-target .healthy {
@@ -337,21 +349,16 @@ ul {
 #deployment-targets .deployment-target .status-summary {
     font-size: var(--font-small);
     color: var(--placeholder);
-    margin-left: 6px;
+    margin-left: 15px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-#deployment-targets .deployment-target .title {
-    cursor: pointer;
-    margin: 0;
-}
-
 #deployment-history .deployment {
     width: 100%;
     padding: 0px 0px;
-    border-bottom: 1px solid var(--tertiary);
+    background: var(--foreground);
 }
 
 #deployment-history .deployment .completed-time {
@@ -360,6 +367,7 @@ ul {
     min-width: 140px;
     color: var(--placeholder);
     font-size: var(--font-small);
+    padding: 0px 0px 15px 15px;
 }
 
 #deployment-history .deployment .success {
@@ -431,6 +439,7 @@ ul {
 
 .status {
     float: right;
+    margin-right: 10px;
     margin-top: -5px;
 }
 
