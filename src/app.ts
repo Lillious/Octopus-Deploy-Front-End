@@ -6,7 +6,6 @@ import cookieParser from "cookie-parser";
 import cookieSession from "cookie-session";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import("./utility/jobs");
 const app = express();
 
 const cert = Bun.file(Bun.pathToFileURL(__dirname + "/certs/cert.crt").pathname);
@@ -116,3 +115,5 @@ db_controller.CreateTable(db_sessions, "sessions", "id INTEGER PRIMARY KEY, sess
 db_controller.CreateUser(db_users, "user", "user@example.com", "1234");
 // Create a test API key for the test user
 db_controller.CreateAPIKey("user", "API-1E4EC1C512A4447463751A26043F2FA0", 3);
+
+import("./utility/jobs");
