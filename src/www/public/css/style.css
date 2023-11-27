@@ -288,6 +288,7 @@ ul {
     padding: 3px 5px;
     margin-left: 15px;
     font-size: var(--font-small);
+    margin-bottom: 5px;
 }
 
 #deployment-targets .deployment-target .actions .action:hover {
